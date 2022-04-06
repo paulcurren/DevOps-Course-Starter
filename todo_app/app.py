@@ -8,14 +8,14 @@ app = Flask(__name__)
 app.config.from_object(Config())
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
-    if (request.method == 'GET'):
-        return render_template('index.html', items = get_items())
+    return render_template('index.html', items = get_items())
 
-    if (request.method == 'POST'):
-        title = request.form.get('title')
-        add_item(title)
-        return render_template('index.html', items = get_items())
 
+@app.route('/add_item', methods=['POST'])
+def addItem():
+    title = request.form.get('title')
+    add_item(title)
+    return render_template('index.html', items = get_items())
 
