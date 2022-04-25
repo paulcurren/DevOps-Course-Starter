@@ -23,9 +23,11 @@ def index():
 def addItem():
     title = request.form.get('title')
     add_item(title)
-    return render_template('index.html', items = get_items())
+    statuses = get_statuses()
+    allItems = get_items()
+    return render_template('index.html', statuses = list(statuses), items = list(allItems))
 
-@app.route('/change', methods=['POST'])
+@app.route('/', methods=['POST'])
 def changeItem():
     item = request.form.get('item')
     newStatus = request.form.get('status')
@@ -34,6 +36,5 @@ def changeItem():
 
     statuses = get_statuses()
     allItems = get_items()
-
     return render_template('index.html', statuses = list(statuses), items = list(allItems))
 

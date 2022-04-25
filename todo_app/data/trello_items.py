@@ -6,7 +6,7 @@ import os
 __boardId = os.getenv('TRELLO_BOARDID')
 __key = os.getenv('TRELLO_KEY')
 __token = os.getenv('TRELLO_TOKEN')
-
+__default_list = 'To Do'
 
 def change_status(title, status):
 
@@ -44,11 +44,24 @@ def get_items() -> list[Item]:
 def get_item(id) -> Item:
     return None
 
-def add_item(title) -> Item:
-    return None
+def add_item(title):
+    lists = __get_board_lists(__boardId)
+    listId = None
+    for list in lists:
+        if list['name'] == __default_list:
+            listId = list['id']
+    
+    __add_card(listId, title)
+
+
 
 def save_item(item) -> Item:
     return item
+
+
+def __add_card(listId, name):
+    response = requests.post(f"https://api.trello.com/1/cards?key={__key}&token={__token}&name={name}&idList={listId}")
+    return response.json()
 
 def __get_board_cards(boardId):
     response = requests.get(f"https://api.trello.com/1/boards/{boardId}/cards?key={__key}&token={__token}")
