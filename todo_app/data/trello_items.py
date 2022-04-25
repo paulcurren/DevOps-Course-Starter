@@ -28,29 +28,30 @@ def change_status(title, status):
     
     __set_card_list(cardId, listId)
 
+
 def get_statuses():
     lists = __get_board_lists(__boardId)
     for list in lists:
         yield list['name']
 
+
 def get_items() -> list[Item]:
-
     lists = __get_board_lists(__boardId)
-
     for card in __get_board_cards(__boardId):
         listName = __get_list_name(lists, card['idList'])
         yield Item(card['id'], listName, card['name'])
   
+
 def get_item(id) -> Item:
     return None
+
 
 def add_item(title):
     lists = __get_board_lists(__boardId)
     listId = None
     for list in lists:
         if list['name'] == __default_list:
-            listId = list['id']
-    
+            listId = list['id']   
     __add_card(listId, title)
 
 
