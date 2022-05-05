@@ -1,4 +1,4 @@
-from todo_app.Data.item import Item
+from todo_app.src.Data.item import Item
 
 class HomeViewModel:
 
@@ -9,6 +9,10 @@ class HomeViewModel:
     @property
     def items(self) -> list[Item]:
         return self._items
+        
+    @property
+    def doing_items(self) -> list[Item]:
+        return []
 
     @property
     def statuses(self) -> list[str]:
