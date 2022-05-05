@@ -10,17 +10,17 @@
   <div class="row">
     <div class="col-md-12">
 
-      {% for status in statuses %}
+      {% for status in view_model.statuses %}
       <h2>{{status}}</h2>
 
       <ul class="list-group">
-        {% for item in items %}
+        {% for item in view_model.items %}
         {% if item.status == status %}
         <li class="list-group-item">
           <form method="post" action="/">
             {{ item.title }}
             <div class="btn-group" role="group" >
-            {% for buttonStatus in statuses %}
+            {% for buttonStatus in view_model.statuses %}
               {% if buttonStatus != item.status %}
               <input type="hidden" name="item" value="{{ item.title }}" />
               <input type="submit" name="status" value="{{buttonStatus}}" class="btn btn-info"/>

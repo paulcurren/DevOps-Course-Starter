@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect
+from todo_app.ViewModels.HomeViewModel import HomeViewModel
 
 from todo_app.flask_config import Config
 
-from todo_app.data.trello_items import add_item, get_items, get_statuses, change_status
+from todo_app.Data.trello_items import add_item, get_items, get_statuses, change_status
 
 
 app = Flask(__name__)
@@ -12,10 +13,9 @@ app.config.from_object(Config())
 @app.route('/', methods=['GET'])
 def index():
 
-    statuses = get_statuses()
-    allItems = get_items()
+    home_view_model = HomeViewModel(list(get_items()), list(get_statuses()))
 
-    return render_template('index.html', statuses = list(statuses), items = list(allItems))
+    return render_template('index.html', view_model = home_view_model)
 
 
 @app.route('/add_item', methods=['POST'])

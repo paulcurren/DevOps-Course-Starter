@@ -1,4 +1,6 @@
-from todo_app.data.item import Item
+from tokenize import String
+from typing import Iterator
+from todo_app.Data.item import Item
 
 import requests
 import os
@@ -29,13 +31,13 @@ def change_status(title, status):
     __set_card_list(cardId, listId)
 
 
-def get_statuses():
+def get_statuses() -> Iterator[str]:
     lists = __get_board_lists(__boardId)
     for list in lists:
         yield list['name']
 
 
-def get_items() -> list[Item]:
+def get_items() -> Iterator[Item]:
     lists = __get_board_lists(__boardId)
     for card in __get_board_cards(__boardId):
         listName = __get_list_name(lists, card['idList'])
@@ -53,7 +55,6 @@ def add_item(title):
         if list['name'] == __default_list:
             listId = list['id']   
     __add_card(listId, title)
-
 
 
 def save_item(item) -> Item:
