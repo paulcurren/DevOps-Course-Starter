@@ -1,6 +1,6 @@
 import pytest
-from todo_app.src.Data.item import Item
 
+from todo_app.src.Data.item import Item
 from todo_app.src.ViewModels.HomeViewModel import HomeViewModel
 
 
@@ -17,4 +17,5 @@ def test_doing_items():
 
     # assert
     assert len(doing_items) == 2
-    
+    assert doing_items[0].title == "Item1"
+    assert doing_items[1].title == "Item3"

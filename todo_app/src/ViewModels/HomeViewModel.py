@@ -12,7 +12,12 @@ class HomeViewModel:
         
     @property
     def doing_items(self) -> list[Item]:
-        return []
+        result = []
+        for item in self._items:
+            if (item.status == "Doing"):
+                result.append(item)
+        return result
+
 
     @property
     def statuses(self) -> list[str]:

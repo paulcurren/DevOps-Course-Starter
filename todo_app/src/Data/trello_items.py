@@ -5,85 +5,88 @@ from todo_app.src.Data.item import Item
 import requests
 import os
 
-__boardId = os.getenv('TRELLO_BOARDID')
-__key = os.getenv('TRELLO_KEY')
-__token = os.getenv('TRELLO_TOKEN')
-__default_list = 'To Do'
 
-def change_status(title, status):
+class TrelloItems:
+    def __init__(self):
+        self._boardId = os.getenv('TRELLO_BOARDID')
+        self._key = os.getenv('TRELLO_KEY')
+        self._token = os.getenv('TRELLO_TOKEN')
+        self._default_list = 'To Do'
 
-    cards = __get_board_cards(__boardId)
-    cardId = None
-    for card in cards:
-        if card['name'] == title:
-            cardId = card['id']
-    if cardId == None:
-        return
+    def change_status(self, title, status):
 
-    lists = __get_board_lists(__boardId)
-    listId = None
-    for list in lists:
-        if list['name'] == status:
-            listId = list['id']
-    if listId == None:
-        return
+        cards = self.__get_board_cards(self._boardId)
+        cardId = None
+        for card in cards:
+            if card['name'] == title:
+                cardId = card['id']
+        if cardId == None:
+            return
+
+        lists = self.__get_board_lists(self._boardId)
+        listId = None
+        for list in lists:
+            if list['name'] == status:
+                listId = list['id']
+        if listId == None:
+            return
+        
+        self.__set_card_list(cardId, listId)
+
+
+    def get_statuses(self) -> Iterator[str]:
+        lists = self.__get_board_lists(self._boardId)
+        for list in lists:
+            yield list['name']
+
+
+    def get_items(self) -> Iterator[Item]:
+        lists = self.__get_board_lists(self._boardId)
+        for card in self.__get_board_cards(self._boardId):
+            listName = self.__get_list_name(lists, card['idList'])
+            yield Item(card['id'], listName, card['name'])
     
-    __set_card_list(cardId, listId)
+
+    def get_item(self, id) -> Item:
+        return None
 
 
-def get_statuses() -> Iterator[str]:
-    lists = __get_board_lists(__boardId)
-    for list in lists:
-        yield list['name']
+    def add_item(self, title):
+        lists = self.__get_board_lists(self._boardId)
+        listId = None
+        for list in lists:
+            if list['name'] == self.__default_list:
+                listId = list['id']   
+        self.__add_card(listId, title)
 
 
-def get_items() -> Iterator[Item]:
-    lists = __get_board_lists(__boardId)
-    for card in __get_board_cards(__boardId):
-        listName = __get_list_name(lists, card['idList'])
-        yield Item(card['id'], listName, card['name'])
-  
-
-def get_item(id) -> Item:
-    return None
+    def save_item(self, item) -> Item:
+        return item
 
 
-def add_item(title):
-    lists = __get_board_lists(__boardId)
-    listId = None
-    for list in lists:
-        if list['name'] == __default_list:
-            listId = list['id']   
-    __add_card(listId, title)
+    def __add_card(self, listId, name):
+        payload = {'key': self._key, 'token': self._token, 'name': name, 'idList': listId}
+        response = requests.post(f"https://api.trello.com/1/cards", params=payload)
+        return response.json()
+
+    def __get_board_cards(self, boardId):
+        payload = {'key': self._key, 'token': self._token}
+        response = requests.get(f"https://api.trello.com/1/boards/{boardId}/cards", params=payload)
+        return response.json()
+
+    def __set_card_list(self, cardId, listId):
+        payload = {'key': self._key, 'token': self._token, 'idList': listId}
+        response = requests.put(f"https://api.trello.com/1/cards/{cardId}", params=payload)
+        return response.json()
 
 
-def save_item(item) -> Item:
-    return item
+    def __get_board_lists(self, boardId):
+        payload = {'key': self._key, 'token': self._token}
+        response = requests.get(f"https://api.trello.com/1/boards/{boardId}/lists", params=payload)
+        return response.json()
 
-
-def __add_card(listId, name):
-    payload = {'key': __key, 'token': __token, 'name': name, 'idList': listId}
-    response = requests.post(f"https://api.trello.com/1/cards", params=payload)
-    return response.json()
-
-def __get_board_cards(boardId):
-    payload = {'key': __key, 'token': __token}
-    response = requests.get(f"https://api.trello.com/1/boards/{boardId}/cards", params=payload)
-    return response.json()
-
-def __set_card_list(cardId, listId):
-    payload = {'key': __key, 'token': __token, 'idList': listId}
-    response = requests.put(f"https://api.trello.com/1/cards/{cardId}", params=payload)
-    return response.json()
-
-
-def __get_board_lists(boardId):
-    payload = {'key': __key, 'token': __token}
-    response = requests.get(f"https://api.trello.com/1/boards/{boardId}/lists", params=payload)
-    return response.json()
-
-def __get_list_name(lists, listId):
-    for list in lists:
-        if list['id'] == listId:
-            return list['name']
-    return 'unknown'
+    def __get_list_name(self, lists, listId):
+        for list in lists:
+            if list['id'] == listId:
+                return list['name']
+        return 'unknown'
