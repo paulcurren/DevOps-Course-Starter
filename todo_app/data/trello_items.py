@@ -61,20 +61,24 @@ def save_item(item) -> Item:
 
 
 def __add_card(listId, name):
-    response = requests.post(f"https://api.trello.com/1/cards?key={__key}&token={__token}&name={name}&idList={listId}")
+    payload = {'key': __key, 'token': __token, 'name': name, 'idList': listId}
+    response = requests.post(f"https://api.trello.com/1/cards", params=payload)
     return response.json()
 
 def __get_board_cards(boardId):
-    response = requests.get(f"https://api.trello.com/1/boards/{boardId}/cards?key={__key}&token={__token}")
+    payload = {'key': __key, 'token': __token}
+    response = requests.get(f"https://api.trello.com/1/boards/{boardId}/cards", params=payload)
     return response.json()
 
 def __set_card_list(cardId, listId):
-    response = requests.put(f"https://api.trello.com/1/cards/{cardId}?key={__key}&token={__token}&idList={listId}")
+    payload = {'key': __key, 'token': __token, 'idList': listId}
+    response = requests.put(f"https://api.trello.com/1/cards/{cardId}", params=payload)
     return response.json()
 
 
 def __get_board_lists(boardId):
-    response = requests.get(f"https://api.trello.com/1/boards/{boardId}/lists?key={__key}&token={__token}")
+    payload = {'key': __key, 'token': __token}
+    response = requests.get(f"https://api.trello.com/1/boards/{boardId}/lists", params=payload)
     return response.json()
 
 def __get_list_name(lists, listId):
