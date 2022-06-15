@@ -47,21 +47,12 @@ class TrelloItems:
             yield Item(card['id'], listName, card['name'])
     
 
-    def get_item(self, id) -> Item:
-        return None
-
-
     def add_item(self, title):
         lists = self.__get_board_lists(self._boardId)
         listId = None
         for list in lists:
-            if list['name'] == self.__default_list:
-                listId = list['id']   
-        self.__add_card(listId, title)
-
-
-    def save_item(self, item) -> Item:
-        return item
+            if list['name'] == self._default_list:
+                self.__add_card(list['id'], title)        
 
 
     def __add_card(self, listId, name):

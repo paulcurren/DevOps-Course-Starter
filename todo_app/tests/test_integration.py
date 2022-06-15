@@ -52,12 +52,10 @@ def test_index_page(monkeypatch, client):
 
     # assert
     data = str(response.get_data())
-    ok1 = "Test card 1" in data
-    ok2 = "Test card 2" in data
 
     assert response.status_code == 200
-    assert ok1 is True
-    assert ok2 is True
+    assert "Test card 1" in data
+    assert "Test card 2" in data
 
 
     
