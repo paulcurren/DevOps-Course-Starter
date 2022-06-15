@@ -16,9 +16,7 @@ def test_doing_items():
     doing_items = view_model.doing_items
 
     # assert
-    assert len(doing_items) == 2
-    assert doing_items[0].title == "Item1"
-    assert doing_items[1].title == "Item3"
+    assert doing_items == [ item1, item3 ]
 
 def test_done_items():
     # arrange
