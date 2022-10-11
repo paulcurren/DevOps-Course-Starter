@@ -117,4 +117,5 @@ env/
 .venv/
 
 ### Configuration files ###
-.env
+.env.dev
+.env.prod

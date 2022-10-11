@@ -1,0 +1,18 @@
+version: "1.0"
+services:
+
+  test:
+    env_file: .env.test
+    image: todo-app:test
+    
+  dev:
+    env_file: .env.dev
+    image: todo-app:dev
+    ports:
+      - "7000:8000"
+    
+  prod:
+    env_file: .env.prod
+    image: todo-app:prod
+    ports:
+      - "7001:8000"
