@@ -21,6 +21,9 @@ EXPOSE 8000
 ### Production image...
 FROM base as production
 
+RUN pip install flask
+RUN pip install gunicorn
+
 # Define entry point...
 ENTRYPOINT poetry run gunicorn --bind 0.0.0.0 "todo_app.app:create_app()"
 
