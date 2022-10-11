@@ -1,7 +1,7 @@
 import pytest
 
-from todo_app.src.Data.item import Item
-from todo_app.src.ViewModels.HomeViewModel import HomeViewModel
+from todo_app.Data.item import Item
+from todo_app.ViewModels.HomeViewModel import HomeViewModel
 
 
 def test_doing_items():

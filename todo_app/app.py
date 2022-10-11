@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect
 
-from todo_app.src.ViewModels.HomeViewModel import HomeViewModel
+from todo_app.ViewModels.HomeViewModel import HomeViewModel
 from todo_app.flask_config import Config
-from todo_app.src.Data.trello_items import TrelloItems
+from todo_app.Data.trello_items import TrelloItems
 
 
 def create_app():

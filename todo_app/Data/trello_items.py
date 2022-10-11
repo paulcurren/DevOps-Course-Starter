@@ -1,6 +1,6 @@
 from tokenize import String
 from typing import Iterator
-from todo_app.src.Data.item import Item
+from todo_app.Data.item import Item
 
 import requests
 import os
