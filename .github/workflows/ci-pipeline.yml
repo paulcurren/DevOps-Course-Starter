@@ -5,9 +5,9 @@ on:
     paths-ignore:
       - 'documentation/**'
       - 'README.md'
-  pull_request:
-    branches:
-      - main
+#  pull_request:
+#    branches:
+#      - main
 
 jobs:
   build:
@@ -30,5 +30,6 @@ jobs:
           username: ${{ secrets.DOCKERUSERNAME }}
           password: ${{ secrets.DOCKERTOKEN }}
 
+      - uses: actions/checkout@v2
       - run: docker build --target production --tag todo-app:prod .
       - run: docker push paulcurren/devops-course-starter:production
