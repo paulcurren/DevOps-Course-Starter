@@ -1,10 +1,11 @@
 name: Continuous Integration
 on: [push]
 jobs:
-  name: Build and test
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v2
-    - run: docker build --target test --tag todo-app:test .
-    - run: docker run --env-file .env.test todo-app:test
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build --target test --tag todo-app:test .
+      - run: docker run --env-file .env.test todo-app:test
 
