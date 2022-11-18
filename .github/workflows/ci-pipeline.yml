@@ -31,5 +31,5 @@ jobs:
           password: ${{ secrets.DOCKERTOKEN }}
 
       - uses: actions/checkout@v2
-      - run: docker build --target production --tag todo-app:prod .
+      - run: docker build --target production --tag paulcurren/todo-app:prod .
       - run: docker push paulcurren/todo-app:prod
