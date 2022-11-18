@@ -32,4 +32,4 @@ jobs:
 
       - uses: actions/checkout@v2
       - run: docker build --target production --tag todo-app:prod .
-      - run: docker push paulcurren/devops-course-starter:production
+      - run: docker push paulcurren/todo-app:prod
