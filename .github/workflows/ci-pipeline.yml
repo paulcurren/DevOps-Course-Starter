@@ -10,7 +10,7 @@ on:
 #      - main
 
 jobs:
-  build:
+  build-test:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
@@ -18,38 +18,70 @@ jobs:
       - run: docker build --target test --tag todo-app:test .
       - run: docker run --env-file .env.test todo-app:test
 
-  publish:
-    name: Publishing
+  # publish:
+  #   name: Publishing
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   if: github.event_name == 'xxx' && github.ref == 'main'
+  #   steps:
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERUSERNAME }}
+  #         password: ${{ secrets.DOCKERTOKEN }}
+
+  #     - uses: actions/checkout@v2
+  #     - run: docker build --target production --tag paulcurren/todo-app:prod .
+  #     - run: docker push paulcurren/todo-app:prod
+ 
+  azure-deploy:
+    name: deplooy to Azure
     runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'xxx' && github.ref == 'main'
+    needs: build-test
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERUSERNAME }}
           password: ${{ secrets.DOCKERTOKEN }}
 
-      - uses: actions/checkout@v2
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - run: docker build --target production --tag paulcurren/todo-app:prod .
       - run: docker push paulcurren/todo-app:prod
 
-  heroku-publish:
-    name: Publishing to Heroku
-    runs-on: ubuntu-latest
-    needs: build
-    #if: github.event_name == 'xxx' && github.ref == 'main'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Build, Push and Deploy to Heroku
-        id: heroku
-        uses: jctaveras/heroku-deploy@v2.1.17
+      - name: 'Deploy to Azure Container Instances'
+        uses: 'azure/aci-deploy@v1'
         with:
-          email: ${{ secrets.HEROKU_EMAIL }}
-          api_key: ${{ secrets.HEROKU_API_KEY }}
-          app_name: pdc-todo-app
-          dockerfile_path: ''
-          options: '--target production --tag paulcurren/todo-app:prod'
-          formation: '' 
+          resource-group: Cohort22_PauCur_ProjectExercise 
+          dns-name-label: pdc-todo-app
+          image: paulcurren/todo-app:prod
+          name: pdc-todo-app-container
+          location: 'uk south'
+          ports: 8000
+          environment-variables: SECRET_KEY=secret-key FLASK_APP=todo_app/app:create_app() FLASK_ENV=production TRELLO_KEY=46ca8e5a7de5ecd64caf894b5213bec1 TRELLO_SECRET=8f6b00257acbb206a20c2619e55658e6c49654d183cc880cd30efc40909c1fb2 TRELLO_TOKEN=83bb1d59995ee4877d43eec9d1cdaabfe646f82e2217e37c8d03a0b036936773 TRELLO_USERNAME=paulcurren4 TRELLO_BOARDID=6262a293ae36b27add8e0edb
+
+  # heroku-publish:
+  #   name: Publishing to Heroku
+  #   runs-on: ubuntu-latest
+  #   needs: publish
+  #   #if: github.event_name == 'xxx' && github.ref == 'main'
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+
+  #     - name: Build, Push and Deploy to Heroku
+  #       id: heroku
+  #       uses: lucassarcanjo/heroku-deploy@2.1.17
+  #       with:
+  #         email: ${{ secrets.HEROKU_EMAIL }}
+  #         api_key: ${{ secrets.HEROKU_API_KEY }}
+  #         app_name: 'pdc-todo-app'
+  #         dockerfile_path: '.'
+  #         options: '--target production'
