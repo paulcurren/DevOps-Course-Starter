@@ -108,3 +108,14 @@ tests/test_viewmodel.py ...                                               [100%]
 
 ============================== 4 passed in 0.33s ===============================
 ```
+
+## Deployment
+
+The app makes used of GitHub Actions to:
+- On push, build and run the 'test' image
+- On push to master, build the production image, push to docker repo, deploy to Azure Container
+
+Azure Container Instance URL: http://pdc-todo-app.uksouth.azurecontainer.io:8000/
+
+
+
