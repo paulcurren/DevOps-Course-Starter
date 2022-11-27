@@ -22,7 +22,7 @@ jobs:
     name: deploy to Azure
     runs-on: ubuntu-latest
     needs: build-test
-    if: github.event.pull_request.merged == true
+    if: github.ref == 'main'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
