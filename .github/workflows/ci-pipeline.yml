@@ -6,8 +6,8 @@ on:
       - 'documentation/**'
       - 'README.md'
   pull_request:
-    branches:
-      - main
+    types:
+      - closed
 
 jobs:
   build-test:
@@ -22,7 +22,7 @@ jobs:
     name: deploy to Azure
     runs-on: ubuntu-latest
     needs: build-test
-    if: github.ref == 'main'
+    if: github.event.pull_request.merged
     steps:
       - name: Checkout
         uses: actions/checkout@v2
