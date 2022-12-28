@@ -127,7 +127,9 @@ Azure Container Instance URL: http://pdc-todo-app.uksouth.azurecontainer.io:8000
 Note: image is stored in Docker Hub repo: https://hub.docker.com/r/paulcurren/todo-app
 
 App Service Plan: ASP-Cohort22PauCurProjectExercise-930f
+
 Web App: pdc-todo-app
 
+Azure App Service URL: https://pdc-todo-app.azurewebsites.net
 
 
