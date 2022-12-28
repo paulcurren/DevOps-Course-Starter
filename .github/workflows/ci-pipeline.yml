@@ -38,8 +38,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - run: docker build --target production --tag paulcurren/todo-app:prod .
-      - run: docker push paulcurren/todo-app:prod
+      - name: Build production image
+        run: docker build --target production --tag paulcurren/todo-app:prod .
+ 
+      - name: Publish 'prod' image to Docker Hub
+        run: docker push paulcurren/todo-app:prod
+
+      - name: Deploy to Azure Web App
+        run: curl -dH -X POST ${{ secrets.AZURE_WEB_HOOK }}
 
       - name: 'Deploy to Azure Container Instances'
         uses: 'azure/aci-deploy@v1'
