@@ -1,7 +1,7 @@
 import os
-from ssl import match_hostname
+import pymongo
 import pytest
-import requests
+import mongomock
 from dotenv import load_dotenv, find_dotenv
 
 from todo_app import app
@@ -11,41 +11,23 @@ def client():
     # Use our test integration config instead of the 'real' version
     file_path = find_dotenv('.env.test')
     load_dotenv(file_path, override=True)
-    
-    # Create the new app.
+
     test_app = app.create_app()
-    
-    # Use the app to create a test_client that can be used in our tests.
     with test_app.test_client() as client:
         yield client
+   
 
+def get_db():
+    client = pymongo.MongoClient('server.example.com')
+    db = client['my_db']
+    return db
 
-class StubResponse():
-    def __init__(self, fake_response_data):
-        self.fake_response_data = fake_response_data
-    def json(self):
-        return self.fake_response_data
+@mongomock.patch(servers=(('server.example.com', 27017),))
+def test_index_page(client):
 
-def get_lists_stub(url, params):
-    test_board_id = os.getenv('TRELLO_BOARDID')
-    fake_response_data = None
-
-    if url == f'https://api.trello.com/1/boards/{test_board_id}/lists':
-        fake_response_data = [{
-            'id': '123abc',
-            'name': 'To Do'
-        }]
-    elif url == f'https://api.trello.com/1/boards/{test_board_id}/cards':
-        fake_response_data = [
-            {'id': '456', 'name': 'Test card 1', 'idList': '123abc'},
-            {'id': '789', 'name': 'Test card 2', 'idList': '123abc'},
-        ]
-
-    return StubResponse(fake_response_data)
-
-def test_index_page(monkeypatch, client):
     # arrange
-    monkeypatch.setattr(requests, 'get', get_lists_stub)
+    get_db().collection.insert_one({'name': 'Test card 1', 'status': 'To Do'})
+    get_db().collection.insert_one({'name': 'Test card 2', 'status': 'Done'})
 
     # act
     response = client.get('/')
@@ -58,4 +40,33 @@ def test_index_page(monkeypatch, client):
     assert "Test card 2" in data
 
 
-    
+@mongomock.patch(servers=(('server.example.com', 27017),))
+def test_add_item(client):
+
+    # arrange
+
+    # act
+    client.post('/add_item', data=dict(title='Test card 3'))
+
+    # assert
+    document = get_db().collection.find_one()
+
+    assert document['name'] == 'Test card 3'
+    assert document['status'] == 'To Do'
+
+
+@mongomock.patch(servers=(('server.example.com', 27017),))
+def test_change_status(client):
+
+    # arrange
+    result = get_db().collection.insert_one({'name': 'Test card 1', 'status': 'To Do'})
+
+    # act
+    client.post('/', data=dict(item=result.inserted_id, status='Doing'))
+
+    # assert
+    document = get_db().collection.find_one()
+
+    assert document['status'] == 'Doing'
+
+

@@ -32,5 +32,6 @@ class HomeViewModel:
         for item in self._items:
             if (item.status == status):
                 result.append(item)
+                
         return result
     

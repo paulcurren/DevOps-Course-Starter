@@ -46,15 +46,3 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: curl -dH -X POST ${{ secrets.AZURE_WEB_HOOK }}
-
-      - name: 'Deploy to Azure Container Instances'
-        uses: 'azure/aci-deploy@v1'
-        with:
-          resource-group: Cohort22_PauCur_ProjectExercise 
-          dns-name-label: pdc-todo-app
-          image: paulcurren/todo-app:prod
-          name: pdc-todo-app-container
-          location: 'uk south'
-          ports: 8000
-          environment-variables: FLASK_APP=todo_app/app:create_app() FLASK_ENV=production 
-          secure-environment-variables: SECRET_KEY=secret-key TRELLO_KEY=${{ secrets.TRELLO_KEY }} TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} TRELLO_TOKEN=${{ secrets.TRELLO_TOKEN }} TRELLO_USERNAME=${{ secrets.TRELLO_USERNAME }} TRELLO_BOARDID=${{ secrets.TRELLO_BOARDID }}
