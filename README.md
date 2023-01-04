@@ -109,19 +109,6 @@ tests/test_viewmodel.py ...                                               [100%]
 ============================== 4 passed in 0.33s ===============================
 ```
 
-## Deployment to Azure Container Instance
-
-The app makes used of GitHub Actions to:
-- On push, build and run the 'test' image
-- On push to master, build the production image, push to docker repo, deploy to Azure Container
-
-Docker repo: https://hub.docker.com/r/paulcurren/todo-app
-Docker Pull Command: docker pull paulcurren/todo-app
-
-Azure Container Instance URL: http://pdc-todo-app.uksouth.azurecontainer.io:8000/
-
-
-
 ## Deployment to Azure App Service (with containers)
 
 Note: image is stored in Docker Hub repo: https://hub.docker.com/r/paulcurren/todo-app
@@ -131,5 +118,3 @@ App Service Plan: ASP-Cohort22PauCurProjectExercise-930f
 Web App: pdc-todo-app
 
 Azure App Service URL: https://pdc-todo-app.azurewebsites.net
-
-
