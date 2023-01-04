@@ -119,3 +119,4 @@ env/
 ### Configuration files ###
 .env.dev
 .env.prod
+.env

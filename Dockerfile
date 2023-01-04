@@ -23,6 +23,7 @@ FROM base as production
 
 RUN pip install flask
 RUN pip install gunicorn
+RUN pip install pymongo
 
 # Define entry point...
 ENTRYPOINT poetry run gunicorn --bind 0.0.0.0 "todo_app.app:create_app()"
@@ -35,6 +36,7 @@ FROM base as development
 
 RUN pip install flask
 RUN pip install python-dotenv
+RUN pip install pymongo
 
 # Define entry point...
 ENTRYPOINT poetry run flask run --host=0.0.0.0 --port=8000
@@ -49,6 +51,8 @@ FROM base as test
 RUN pip install pytest
 RUN pip install flask
 RUN pip install python-dotenv
+RUN pip install pymongo
+RUN pip install mongomock
 
 # Define entry point...
 ENTRYPOINT ["poetry", "run", "pytest", "todo_app/tests"]

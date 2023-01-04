@@ -2,19 +2,22 @@ from flask import Flask, render_template, request, redirect
 
 from todo_app.ViewModels.HomeViewModel import HomeViewModel
 from todo_app.flask_config import Config
-from todo_app.Data.trello_items import TrelloItems
+from todo_app.Data.mongo_items import MongoItems
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config())
 
-    trelloItems = TrelloItems()
+    itemsStore = MongoItems()
 
     @app.route('/', methods=['GET'])
     def index():
 
-        home_view_model = HomeViewModel(list(trelloItems.get_items()), list(trelloItems.get_statuses()))
+        items = itemsStore.get_items()
+        statuses = itemsStore.get_statuses()
+
+        home_view_model = HomeViewModel(items, statuses)
 
         return render_template('index.html', view_model = home_view_model)
 
@@ -23,7 +26,7 @@ def create_app():
     def addItem():
 
         title = request.form.get('title')
-        trelloItems.add_item(title)
+        itemsStore.add_item(title)
 
         return redirect('/', 303)
 
@@ -32,7 +35,7 @@ def create_app():
 
         item = request.form.get('item')
         newStatus = request.form.get('status')
-        trelloItems.change_status(item, newStatus)
+        itemsStore.change_status(item, newStatus)
 
         return redirect('/', 303)
 
