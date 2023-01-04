@@ -22,7 +22,7 @@
             <div class="btn-group" role="group" >
             {% for buttonStatus in view_model.statuses %}
               {% if buttonStatus != item.status %}
-              <input type="hidden" name="item" value="{{ item.title }}" />
+              <input type="hidden" name="item" value="{{ item.id }}" />
               <input type="submit" name="status" value="{{buttonStatus}}" class="btn btn-info"/>
               {% endif %}
           {% endfor %}
