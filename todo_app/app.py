@@ -1,17 +1,52 @@
 from flask import Flask, render_template, request, redirect
+from flask_login import LoginManager, UserMixin, login_required, login_user
 
 from todo_app.ViewModels.HomeViewModel import HomeViewModel
 from todo_app.flask_config import Config
 from todo_app.Data.mongo_items import MongoItems
 
+import requests
+import os
+
+class User(UserMixin):
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+
 
 def create_app():
+
+    _client_id = os.getenv('CLIENT_ID')
+    _client_secret = os.getenv('CLIENT_SECRET')
+    _oauth_uri = os.getenv('OAUTH_URI')
+    _home_uri = os.getenv('HOME_URI')
+
     app = Flask(__name__)
     app.config.from_object(Config())
+    
+    app.config['LOGIN_DISABLED'] = os.getenv('LOGIN_DISABLED') == 'True'
 
     itemsStore = MongoItems()
 
+    login_manager = LoginManager()
+
+    @login_manager.unauthorized_handler
+    def unauthenticated():
+        return redirect(f'https://github.com/login/oauth/authorize?client_id={_client_id}&redirect_uri={_oauth_uri}', 303)
+
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        #return User.get(user_id)
+        return User(id = user_id, name="")
+
+    login_manager.init_app(app)
+
+
+
+
     @app.route('/', methods=['GET'])
+    @login_required
     def index():
 
         items = itemsStore.get_items()
@@ -23,6 +58,7 @@ def create_app():
 
 
     @app.route('/add_item', methods=['POST'])
+    @login_required
     def addItem():
 
         title = request.form.get('title')
@@ -31,6 +67,7 @@ def create_app():
         return redirect('/', 303)
 
     @app.route('/', methods=['POST'])
+    @login_required
     def changeItem():
 
         item = request.form.get('item')
@@ -38,5 +75,32 @@ def create_app():
         itemsStore.change_status(item, newStatus)
 
         return redirect('/', 303)
+
+
+    @app.route('/login/callback', methods=['GET'])
+    def callback():
+        code = request.args.get("code")
+
+        payload = {'client_id': _client_id, 'client_secret': _client_secret, 'code': code, 'redirect_uri': _oauth_uri}
+        oauth_headers = {'Accept': 'application/json'}
+        oauth_response = requests.get(f'https://github.com/login/oauth/access_token', params=payload, headers=oauth_headers)
+        oauth = oauth_response.json()
+        print(oauth)
+
+        access_token = oauth['access_token']
+
+        user_headers = {'Authorization': f'Bearer {access_token}'}
+        user_response = requests.get('https://api.github.com/user', headers=user_headers)
+        print(user_response.json())
+
+
+        user = User(
+            id = user_response.json()['id'],
+            name = user_response.json()['name']
+        )
+
+        login_user(user)
+
+        return redirect('/')
 
     return app
