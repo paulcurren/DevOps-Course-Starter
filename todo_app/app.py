@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template, request, redirect
 from flask_login import LoginManager, UserMixin, login_required, login_user
 
@@ -11,8 +12,15 @@ import os
 class User(UserMixin):
     def __init__(self, id, name):
         self.id = id
-        self.name = name
+        self.name = name     
 
+    def get(id):
+        print('User.get', id)
+        return User(id, "xx")
+
+    def add(self):
+        print('User.add', self)
+        return
 
 def create_app():
 
@@ -23,7 +31,7 @@ def create_app():
 
     app = Flask(__name__)
     app.config.from_object(Config())
-    
+
     app.config['LOGIN_DISABLED'] = os.getenv('LOGIN_DISABLED') == 'True'
 
     itemsStore = MongoItems()
@@ -37,12 +45,11 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        #return User.get(user_id)
-        return User(id = user_id, name="")
+        print('load_user', user_id)
+        return User.get(user_id)
+        #return User(id = user_id, name="yy")
 
     login_manager.init_app(app)
-
-
 
 
     @app.route('/', methods=['GET'])
@@ -85,19 +92,30 @@ def create_app():
         oauth_headers = {'Accept': 'application/json'}
         oauth_response = requests.get(f'https://github.com/login/oauth/access_token', params=payload, headers=oauth_headers)
         oauth = oauth_response.json()
-        print(oauth)
+        #print(oauth)
 
-        access_token = oauth['access_token']
+        access_token = oauth.get('access_token')
+        if access_token == None:
+            return render_template('noauth.html')
 
         user_headers = {'Authorization': f'Bearer {access_token}'}
         user_response = requests.get('https://api.github.com/user', headers=user_headers)
-        print(user_response.json())
 
+        user_info = user_response.json()
+        print('user_info', user_info)
+
+        user_id = user_info.get('id')
+        user_name = user_info.get('name')
+
+        if user_id == None:
+            return render_template('noauth.html')
 
         user = User(
-            id = user_response.json()['id'],
-            name = user_response.json()['name']
+            id = user_id,
+            name = user_name
         )
+
+        user.add()
 
         login_user(user)
 
