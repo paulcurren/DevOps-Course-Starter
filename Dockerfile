@@ -22,6 +22,8 @@ EXPOSE 8000
 FROM base as production
 
 RUN pip install flask
+RUN pip install flask-login
+RUN pip install requests
 RUN pip install gunicorn
 RUN pip install pymongo
 
@@ -35,6 +37,8 @@ ENTRYPOINT poetry run gunicorn --bind 0.0.0.0 "todo_app.app:create_app()"
 FROM base as development
 
 RUN pip install flask
+RUN pip install flask-login
+RUN pip install requests
 RUN pip install python-dotenv
 RUN pip install pymongo
 
@@ -50,6 +54,8 @@ FROM base as test
 # Install pytest, flask and dotenv...
 RUN pip install pytest
 RUN pip install flask
+RUN pip install flask-login
+RUN pip install requests
 RUN pip install python-dotenv
 RUN pip install pymongo
 RUN pip install mongomock
