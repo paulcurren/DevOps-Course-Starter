@@ -160,9 +160,17 @@ az ad sp create-for-rbac --role Contributor --scopes subscriptions/d33b95c7-af3c
 `
 
 Following secrets added to GitHub:
+
+From the state storage account:
+- ARM_ACCESS_KEY
+
+From the service principal:
 - ARM_CLIENT_ID
 - ARM_CLIENT_SECRET
 - ARM_TENANT_ID
 - ARM_SUBSCRIPTION_ID
 
+From the GitHub application registrationL
+- OAUTH_CLIENT_ID
+- OAUTH_CLIENT_SECRET
 

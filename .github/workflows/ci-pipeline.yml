@@ -60,7 +60,7 @@ jobs:
   terraform-deploy:
     name: deploy using terraform
     runs-on: ubuntu-latest
-#    if: github.event.pull_request.merged
+    if: github.event.pull_request.merged
 
     defaults:
       run:
