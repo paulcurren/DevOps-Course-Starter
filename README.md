@@ -118,3 +118,50 @@ App Service Plan: ASP-Cohort22PauCurProjectExercise-930f
 Web App: pdc-todo-app
 
 Azure App Service URL: https://pdc-todo-app.azurewebsites.net
+
+## Deploy via Terraform
+
+`
+az login --use-device-code
+terraform apply
+`
+
+Browse to: https://app-module12-pdc.azurewebsites.net/
+
+### Use Azure Blob Storage for State
+
+Create storage account:
+
+`
+az storage account create --resource-group Cohort22_PauCur_ProjectExercise --name module12asa --sku Standard_LRS --encryption-services blob
+`
+
+Create blob container:
+
+`
+az storage container create --name tfstate --account-name module12asa
+`
+
+Get the key (Powershell _ Azure CLI):
+
+`
+$ACCOUNT_KEY=$(az storage account keys list --resource-group Cohort22_PauCur_ProjectExercise --account-name module12asa --query '[0].value' -o tsv)
+$env:ARM_ACCESS_KEY=$ACCOUNT_KEY
+`
+
+
+### Add Terraform to CI/CD
+
+Create service principal:
+
+`
+az ad sp create-for-rbac --role Contributor --scopes subscriptions/d33b95c7-af3c-4247-9661-aa96d47fccc0/resourceGroups/Cohort22_PauCur_ProjectExercise
+`
+
+Following secrets added to GitHub:
+- ARM_CLIENT_ID
+- ARM_CLIENT_SECRET
+- ARM_TENANT_ID
+- ARM_SUBSCRIPTION_ID
+
+
