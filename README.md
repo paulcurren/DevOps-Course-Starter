@@ -123,6 +123,7 @@ Azure App Service URL: https://pdc-todo-app.azurewebsites.net
 
 `
 az login --use-device-code
+or use ARM_CLIENT_ID etc. environment variables
 terraform apply
 `
 

@@ -55,31 +55,43 @@ jobs:
       - name: Deploy to Azure Web App
         run: curl -dH -X POST ${{ secrets.AZURE_WEB_HOOK }}
 
+
+
   terraform-deploy:
-    name: deploy to Azure
+    name: deploy using terraform
     runs-on: ubuntu-latest
 #    if: github.event.pull_request.merged
 
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    env:
+      ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      TF_VAR_OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+      TF_VAR_OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
 
-      - name: Terraform fmt
-        id: fmt
-        run: terraform fmt -check
+      - run: terraform fmt
+      - run: terraform init
 
-      - name: Terraform Init
-        id: init
-        run: terraform init
+      - run: terraform plan -no-color
+      - run: terraform apply -auto-approve
 
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
+      - run: curl -dH -X POST "$(terraform output -raw cd_webhook)"
 
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color
-        continue-on-error: true
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false
+      
+
+
+

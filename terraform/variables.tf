@@ -3,10 +3,10 @@ variable "prefix" {
   default = "module12-pdc-todo"
 }
 
-variable "client_id" {
+variable "OAUTH_CLIENT_ID" {
   sensitive = true
 }
 
-variable "client_secret" {
+variable "OAUTH_CLIENT_SECRET" {
   sensitive = true
 }

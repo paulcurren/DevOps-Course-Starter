@@ -53,8 +53,8 @@ resource "azurerm_linux_web_app" "main" {
 
     "MONGODB_CONNECTION_STRING"  = azurerm_cosmosdb_account.main.connection_strings[0]
 
-    "CLIENT_ID"                  = "${var.client_id}"
-    "CLIENT_SECRET"              = "${var.client_secret}"
+    "CLIENT_ID"                  = "${var.OAUTH_CLIENT_ID}"
+    "CLIENT_SECRET"              = "${var.OAUTH_CLIENT_SECRET}"
 
     "HOME_URI"                   = "https://app-module12-pdc.azurewebsites.net/"
     "OAUTH_URI"                  = "https://app-module12-pdc.azurewebsites.net/login/callback"
