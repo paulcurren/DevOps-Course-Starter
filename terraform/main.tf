@@ -6,7 +6,7 @@ terraform {
   }
  }
  backend "azurerm" {
-        resource_group_name  = "tfstate"
+        resource_group_name  = "Cohort22_PauCur_ProjectExercise"
         storage_account_name = "module12asa"
         container_name       = "tfstate"
         key                  = "terraform.tfstate"
@@ -55,6 +55,8 @@ resource "azurerm_linux_web_app" "main" {
 
     "CLIENT_ID"                  = "${var.OAUTH_CLIENT_ID}"
     "CLIENT_SECRET"              = "${var.OAUTH_CLIENT_SECRET}"
+
+    "LOGGLY_TOKEN"               = "${var.LOGGLY_TOKEN}"
 
     "HOME_URI"                   = "https://app-module12-pdc.azurewebsites.net/"
     "OAUTH_URI"                  = "https://app-module12-pdc.azurewebsites.net/login/callback"

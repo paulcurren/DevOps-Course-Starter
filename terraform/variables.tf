@@ -1,6 +1,6 @@
 variable "prefix" {
   description = "The prefix used for all resources in this environment"
-  default = "module12-pdc-todo"
+  default = "module13-pdc-todo"
 }
 
 variable "OAUTH_CLIENT_ID" {
@@ -8,5 +8,9 @@ variable "OAUTH_CLIENT_ID" {
 }
 
 variable "OAUTH_CLIENT_SECRET" {
+  sensitive = true
+}
+
+variable "LOGGLY_TOKEN" {
   sensitive = true
 }

@@ -26,6 +26,7 @@ RUN pip install flask-login
 RUN pip install requests
 RUN pip install gunicorn
 RUN pip install pymongo
+RUN pip install loggly-python-handler
 
 # Define entry point...
 ENTRYPOINT poetry run gunicorn --bind 0.0.0.0 "todo_app.app:create_app()"
@@ -41,6 +42,7 @@ RUN pip install flask-login
 RUN pip install requests
 RUN pip install python-dotenv
 RUN pip install pymongo
+RUN pip install loggly-python-handler
 
 # Define entry point...
 ENTRYPOINT poetry run flask run --host=0.0.0.0 --port=8000
@@ -59,6 +61,7 @@ RUN pip install requests
 RUN pip install python-dotenv
 RUN pip install pymongo
 RUN pip install mongomock
+RUN pip install loggly-python-handler
 
 # Define entry point...
 ENTRYPOINT ["poetry", "run", "pytest", "todo_app/tests"]
