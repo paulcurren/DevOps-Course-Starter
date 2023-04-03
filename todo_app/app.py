@@ -1,4 +1,6 @@
 import json
+import sys
+import logging
 from flask import Flask, render_template, request, redirect
 from flask_login import LoginManager, UserMixin, login_required, login_user
 
@@ -9,20 +11,25 @@ from todo_app.Data.mongo_items import MongoItems
 import requests
 import os
 
+from loggly.handlers import HTTPSHandler
+from logging import Formatter
+
+
 class User(UserMixin):
     def __init__(self, id, name):
         self.id = id
         self.name = name     
 
     def get(id):
-        print('User.get', id)
+        #print('User.get', id)
         return User(id, "xx")
 
     def add(self):
-        print('User.add', self)
+        #print('User.add', self)
         return
 
 def create_app():
+
 
     _client_id = os.getenv('CLIENT_ID')
     _client_secret = os.getenv('CLIENT_SECRET')
@@ -31,8 +38,38 @@ def create_app():
 
     app = Flask(__name__)
     app.config.from_object(Config())
-
     app.config['LOGIN_DISABLED'] = os.getenv('LOGIN_DISABLED') == 'True'
+    app.config['LOGGLY_TOKEN'] = os.getenv('LOGGLY_TOKEN')
+
+    logFormat = '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+    dateFormat = '%Y-%m-%d %H:%M:%S'
+
+    logging.basicConfig(
+        format=logFormat, 
+        datefmt=dateFormat,
+        level=os.environ.get("LOG_LEVEL", "DEBUG"))
+
+
+    rootLog = logging.getLogger()
+    
+
+    # reduce Flash logging
+    flaskLog = logging.getLogger('werkzeug')
+    flaskLog.setLevel(logging.ERROR)
+
+    # reduce handler logging
+    urlLog = logging.getLogger('urllib3.connectionpool')
+    urlLog.setLevel(logging.ERROR)
+
+    if app.config['LOGGLY_TOKEN'] is not None:
+        handler = HTTPSHandler(f'https://logs-01.loggly.com/inputs/{app.config["LOGGLY_TOKEN"]}/tag/todo-app')
+        handler.setFormatter(Formatter(fmt = logFormat, datefmt = dateFormat))
+        rootLog.addHandler(handler)
+
+
+
+    #rootLog.info('Starting with environment: %s', os.environ.items())
+    rootLog.info('Starting todo app')
 
     itemsStore = MongoItems()
 
@@ -45,9 +82,8 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        print('load_user', user_id)
+        app.logger.debug('load_user', user_id)
         return User.get(user_id)
-        #return User(id = user_id, name="yy")
 
     login_manager.init_app(app)
 
@@ -102,7 +138,7 @@ def create_app():
         user_response = requests.get('https://api.github.com/user', headers=user_headers)
 
         user_info = user_response.json()
-        print('user_info', user_info)
+        app.logger.debug('user_info', user_info)
 
         user_id = user_info.get('id')
         user_name = user_info.get('name')

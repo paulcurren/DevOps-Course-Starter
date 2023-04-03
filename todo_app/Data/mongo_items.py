@@ -3,10 +3,12 @@ from typing import Iterator
 
 from bson import ObjectId
 from todo_app.Data.item import Item
+import logging
 
 import pymongo
 import os
 
+log = logging.getLogger(__name__)
 
 class MongoItems:
 
@@ -16,12 +18,13 @@ class MongoItems:
         return db
 
     def change_status(self, id, status):
-
         self.get_db().collection.find_one_and_update(
             {"_id": ObjectId(id)},
             {'$set':
                 {'status': status}
             })
+
+        log.info('change_status: id[%s] status[%s]', id, status)
 
         return
 
@@ -44,6 +47,8 @@ class MongoItems:
     def add_item(self, title):
 
         self.get_db().collection.insert_one({'status': 'To Do', 'name': title})
+
+        log.info('add_item: title[%s]', title)
 
         return
 

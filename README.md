@@ -170,7 +170,10 @@ From the service principal:
 - ARM_TENANT_ID
 - ARM_SUBSCRIPTION_ID
 
-From the GitHub application registrationL
+From the GitHub application registration:
 - OAUTH_CLIENT_ID
 - OAUTH_CLIENT_SECRET
+
+From Loggly:
+- LOGGLY_TOKEN
 
